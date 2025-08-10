@@ -1,1 +1,135 @@
+{
+  "info": {
+    "name": "QA Portfolio - Sample API Tests",
+    "_postman_id": "a1111111-b222-4c33-8d44-eeeeeeeeeeee",
+    "description": "Minimal API test collection for portfolio (uses reqres.in).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET Users (page=2)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/users?page=2",
+          "host": ["{{base_url}}"],
+          "path": ["api", "users"],
+          "query": [
+            { "key": "page", "value": "2" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 200\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test(\"Response has data array\", function () {",
+              "  pm.expect(json).to.have.property('data');",
+              "  pm.expect(Array.isArray(json.data)).to.be.true;",
+              "});",
+              "",
+              "pm.test(\"Each user has id, email, first_name, last_name\", function () {",
+              "  json.data.forEach(u => {",
+              "    pm.expect(u).to.have.property('id');",
+              "    pm.expect(u).to.have.property('email');",
+              "    pm.expect(u).to.have.property('first_name');",
+              "    pm.expect(u).to.have.property('last_name');",
+              "  });",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "POST Login (valid credentials)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"eve.holt@reqres.in\",\n  \"password\": \"cityslicka\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/login",
+          "host": ["{{base_url}}"],
+          "path": ["api", "login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 200\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test(\"Token is present\", function () {",
+              "  pm.expect(json).to.have.property('token');",
+              "  pm.expect(json.token).to.be.a('string').and.not.empty;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "POST Login (missing password - negative)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"eve.holt@reqres.in\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/login",
+          "host": ["{{base_url}}"],
+          "path": ["api", "login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 400 for missing password\", function () {",
+              "  pm.response.to.have.status(400);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test(\"Error message present\", function () {",
+              "  pm.expect(json).to.have.property('error');",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://reqres.in",
+      "type": "string"
+    }
+  ]
+}
 
